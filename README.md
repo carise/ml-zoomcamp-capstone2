@@ -21,11 +21,26 @@ This project uses the [Sea Animals Image Dataset](https://www.kaggle.com/dataset
 
 
 ### Exploratory Data Analysis
-In the exploratory data analysis, I did a few things:
+While initially training the model, it took a very long time to train because of how many classes, and the accuracy of the model was quite low (< 30%). I decided to reduce the number of classes I would train the model on so I would have enough time to work on getting the model deployed.
 
-* Remove duplicate images, to reduce overfitting or bias
-* Add padding to images to prevent distortion when resizing as input to the model
-* Remove some categories - mainly animals that don't live entirely underwater, as well as the Puffers category (puffers are a type of a fish and there's a category for fish already)
+#### Preprocessing
+As part of EDA, I did some preprocessing:
+
+* Remove duplicate images, to reduce overfitting or bias (`remove_duplicates.py`)
+* Add padding to images to prevent distortion when resizing as input to the model (`pad_images.py`)
+* Choose a subset of categories for which to build the image classifier (this was done manually - I looked at the available classes and picked several creatures).
+
+#### Training the model
+
+The progression of model training is as follows:
+
+* Train a CNN
+    * Data augmentation includes rotation, shifts, zoom, and horizontal flip
+    * 2 Conv2D layers
+    * Adam optimizer, learning rate = 0.001
+    * Inner dense layer, units = 32
+
+
 
 ### TODO
 
