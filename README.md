@@ -84,43 +84,22 @@ I trained a CNN and a model
 ## Model Evaluation
 
 Metrics used for evaluating the model:
-* training and validation accuracy and loss
+* validation accuracy and loss
 * confusion matrix
-* 
+* accuracy, precision, recall, F1 score
 
+The model trained on ResNet50 is more accurate than the CNN trained only on the data set (98% vs 69% validation accuracy). Loss is also better, 0.08 vs 0.77. Precision, recall, and F1 score were higher for the ResNet50 model.
 
-* Export the final model to `train.py`
+The one thing I am not sure about is why the validation accuracy for the ResNet50 trained model is so low (25-30%). I'll revisit that later.
 
+## Deployment
 
-### TODO
-
-rough notes
-* EDA: analyze content of images, distribution of classes, distribution of images per class, etc.
-  * remove duplicate images
-* train model
-  * split into train/test
-  * variations
-    * small (150x150) and large (299x299)
-    * dropout vs no dropout
-    * extra inner layers vs not
-  * tuning
-    * learning rate
-    * dropout rate
-    * augmentation
-    * size of inner layers
-  * make sure to include graphs!
-
-* convert model to tflite
-
-* rename notebook-subset.ipynb
-
-* export training code to train.py
-  * train.py should train only the best model
-
-
+* Export the final model
+* Put training code in `train.py`
+* Local and cloud deployment (details below)
  
 
-# How to run the model API
+# Running the code
 
 The commands provided in this README have been tested in MacOS (`pipenv`) and WSL2 Ubuntu (`pip`).
 
@@ -146,6 +125,7 @@ pipenv install --dev
 pip install -r requirements-dev.txt
 ```
 
+
 ## Jupyter notebook
 
 The notebook contains the data cleaning, analysis, and model training.
@@ -154,6 +134,13 @@ To run the notebook:
 ```
 pipenv run jupyter notebook
 ```
+
+## Training the final model
+
+```
+pipenv run python train.py
+```
+
 
 ## Run server locally
 
