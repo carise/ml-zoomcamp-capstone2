@@ -3,43 +3,93 @@
 
 ## Problem statement
 
-This is the capstone project for DataTalksClub's Machine Learning Zoomcamp. I am using the [Sea Animals Image Dataset](https://www.kaggle.com/datasets/vencerlanz09/sea-animals-image-dataste) on Kaggle. My kid loves sea creatures and the ocean, and I was also inspired by the [Fathomnet project](https://fathomnet.org).
+This is the capstone project for DataTalksClub's Machine Learning Zoomcamp. I am using the [Sea Animals Image Dataset](https://www.kaggle.com/datasets/vencerlanz09/sea-animals-image-dataste) on Kaggle. I was inspired by the [Fathomnet project](https://fathomnet.org).
 
 The Fathomnet project is particularly interesting, because it "[enables] the future of conservation, exploration, and discovery" of the ocean (from their website). The ocean is one of the final frontiers for discovery, and the more we know about it, the more we can understand how to take care of it better. For example, a lot of research is going into determining the levels of ocean pollution and its impact on all life. However, it's not so easy for people to navigate the deep oceans, so organizations such as [MBARI](https://www.mbari.org/) build underwater robots to capture images and video, as well as map the ocean floor. AI can help us understand what's in the captured data.
 
-In this project, I am building a simple sea creature classifier. Given an image, my web service will determine what kind of sea creature it is and try to classify it as one of the 23 creature classes in the dataset.
+In this project, I am building a simple sea creature classifier. Given an image, my web service will determine what kind of sea creature it is.
 
 
-## Data
+## Exploratory Data Analysis
 
-### Dataset
-This project uses the [Sea Animals Image Dataset](https://www.kaggle.com/datasets/vencerlanz09/sea-animals-image-dataste)
+This project uses (a subset of) the [Sea Animals Image Dataset](https://www.kaggle.com/datasets/vencerlanz09/sea-animals-image-dataste)
 
 * 23 different sea animal classes
 * At most 300px in height or width
 * JPEG files
 
+While initially training the model, it took a very long time to train because of how many classes, and the accuracy of the model was quite low (< 30%). I decided to reduce the number of classes I would train the model on so I would have enough time to work on getting the model deployed. While this does change the problem a bit, I figured it is ok to scope down the problem in order to deliver an image classifier that I trained on my own.
 
-### Exploratory Data Analysis
-While initially training the model, it took a very long time to train because of how many classes, and the accuracy of the model was quite low (< 30%). I decided to reduce the number of classes I would train the model on so I would have enough time to work on getting the model deployed.
+Further exploration of the data (e.g. distribution of images per class, duplicate image occurrences) is in [notebook.ipynb](notebook.ipynb)
 
-#### Preprocessing
+
+### Image preprocessing
 As part of EDA, I did some preprocessing:
 
-* Remove duplicate images, to reduce overfitting or bias (`remove_duplicates.py`)
+* Remove duplicate images, to reduce overfitting and/or bias (`remove_duplicates.py`)
 * Add padding to images to prevent distortion when resizing as input to the model (`pad_images.py`)
 * Choose a subset of categories for which to build the image classifier (this was done manually - I looked at the available classes and picked several creatures).
 
-#### Training the model
 
-The progression of model training is as follows:
+### Cleaning the data
+
+I have provided all the data I processed and trained on. You can find the raw dataset in `data/` and the cleaned and padded images in `cleaned_padded_data/`.
+
+To run the `remove_duplicates.py` file, you'll need to have `tkinter` available. The more recent versions of python 3.11 might not have `tkinter` compiled in, so you'll need to refer to other documentation to do that (e.g. [StackOverflow](https://stackoverflow.com/questions/76105218/why-does-tkinter-or-turtle-seem-to-be-missing-or-broken-shouldnt-it-be-part)). As mentioned already, I've already provided all the cleaned data, so you can skip this part unless you're curious about how it works. I'm also aware that there are other scripts and AI-assisted duplicate image removal, but I did not want to create other dependencies just to do a simple image deduplication.
+
+```
+# in same directory where data/ lives
+pipenv run python remove_duplicates.py
+
+# or with vanilla python
+python remove_duplicates.py
+```
+
+This should output unique images to `cleaned_data/`.
+
+To add padding to the images:
+
+```
+# in same directory where cleaned_data/ lives
+pipenv run python pad_images.py
+
+# or with vanilla python
+python pad_images.py
+```
+
+### Data analysis and preparation
+
+The data was split into train/validation/test sets (60%/20%/20%) and determined to have no duplicate filenames. The classes were more or less balanced: about 300 images per class for training, and 100 images per class in validation and test.
+
+For the CNN, data augmentation is performed (e.g. image flips, shifts, etc.). For ResNet50, the keras `preprocess_input` function is applied.
+
+
+## Training the model
+
+I trained a CNN and a model 
 
 * Train a CNN
-    * Data augmentation includes rotation, shifts, zoom, and horizontal flip
-    * 2 Conv2D layers
-    * Adam optimizer, learning rate = 0.001
-    * Inner dense layer, units = 32
+    * 2 Conv2D layers - tune the filters
+    * Adam optimizer - tune learning rate
+    * Inner dense layer - tune units
+* Train a model with [ResNet50](https://keras.io/api/applications/resnet/) as the base layer
+    * Adam optimizer - tune learning rate
+    * Inner dense layer - tune units
+    * With/without dropout
+    * With/without batch normalization
+    * With/without training some layers in the base layer
+    * Unfreeze some layers for training in ResNet50
 
+
+## Model Evaluation
+
+Metrics used for evaluating the model:
+* training and validation accuracy and loss
+* confusion matrix
+* 
+
+
+* Export the final model to `train.py`
 
 
 ### TODO
@@ -59,32 +109,41 @@ rough notes
     * augmentation
     * size of inner layers
   * make sure to include graphs!
-* use SaturnCloud to train actual model
+
 * convert model to tflite
+
+* rename notebook-subset.ipynb
+
 * export training code to train.py
   * train.py should train only the best model
- 
 
-## Important files in this project
 
  
 
 # How to run the model API
 
-The commands provided in this README have been tested in Mac OS, and should also work in Linux and WSL.
+The commands provided in this README have been tested in MacOS (`pipenv`) and WSL2 Ubuntu (`pip`).
 
 ## Install dependencies
 
 Prerequisites: Python 3.11+, `pipenv`
 
+(I had trouble getting `pipenv` to work cross-platform. I started developing this project in MacOS and then decided to use Windows/WSL2 Ubuntu to do the model training. When I tried to install the `pipenv` environment, several important packages wouldn't install properly, so I exported my `pipenv` dependencies to `requirements*.txt`. I've provided the equivalent `pip` commands below.)
+
 Install pip dependencies
 ```
 pipenv install
+
+# or
+pip install -r requirements.txt
 ```
 
 If you want to run the notebook, you'll also want to install the dev dependencies
 ```
 pipenv install --dev
+
+# or
+pip install -r requirements-dev.txt
 ```
 
 ## Jupyter notebook
