@@ -169,6 +169,10 @@ docker run -dp 8080:8080 sea-class:latest
 
 ### Send requests to local lambda function
 
+Let's test with this image
+
+![octopus](https://www.nwf.org/-/media/NEW-WEBSITE/Shared-Folder/Wildlife/Invertebrates/invertebrate_octopus_600x300.jpg)
+
 #### Test script
 Edit the `data.url` in `test.py` if you want to use a different image url.
 
@@ -235,16 +239,24 @@ Configure the function (memory, timeout)
 
 **Please be patient**, when you invoke the function, it takes a few seconds to start if it's not warmed up.
 
+Let's test with this image
+
+![octopus](https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRv2ATiVKEdhGo9WFNvX3e2ZG75_3FMZDlLA8atd7TjunkqftZR)
+
 #### `curl`
 ```
 curl -X POST -H "Content-Type: application/json" \
     https://u4h9zdo0zc.execute-api.us-west-2.amazonaws.com/default/ml-zoomcamp-capstone2 \
-    -d '{"url": "https://www.nwf.org/-/media/NEW-WEBSITE/Shared-Folder/Wildlife/Invertebrates/invertebrate_octopus_600x300.jpg"}'
+    -d '{"url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRv2ATiVKEdhGo9WFNvX3e2ZG75_3FMZDlLA8atd7TjunkqftZR"}'
 
 # output
-{"octopus": 0.9990772008895874, "otter": 4.349778492951373e-08, "penguin": 5.916607278777519e-06, "starfish": 0.0009168016258627176}
+{"octopus": 0.032857947051525116, "otter": 1.4040675289095361e-08, "penguin": 1.692076665449349e-07, "starfish": 0.9671419262886047}
 ```
 
 #### Postman
 
 ![postman invoke lambda](img/postman_aws_lambda_invoke.png)
+
+## In case of emergency
+
+If you're having issues and need to contact me, please DM me in the DataTalksClub Slack or [file an issue](https://github.com/carise/ml-zoomcamp-capstone2/issues).
