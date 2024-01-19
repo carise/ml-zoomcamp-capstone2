@@ -170,9 +170,9 @@ docker run -dp 8080:8080 sea-class:latest
 
 ### Send requests to local lambda function
 
-Let's test with this image
+Test image
 
-![octopus](https://www.nwf.org/-/media/NEW-WEBSITE/Shared-Folder/Wildlife/Invertebrates/invertebrate_octopus_600x300.jpg)
+![octopus](img/octopus.jpg)
 
 #### Test script
 Edit the `data.url` in `test.py` if you want to use a different image url.
@@ -240,9 +240,9 @@ Configure the function (memory, timeout)
 
 **Please be patient**, when you invoke the function, it takes a few seconds to start if it's not warmed up.
 
-Let's test with this image
+Test image
 
-![octopus](https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRv2ATiVKEdhGo9WFNvX3e2ZG75_3FMZDlLA8atd7TjunkqftZR)
+![octopus](img/starfish.jpg)
 
 #### `curl`
 ```
