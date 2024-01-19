@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 # coding: utf-8
 
+import json
+
 import tflite_runtime.interpreter as tflite
 
 from keras_image_helper import create_preprocessor
@@ -35,7 +37,8 @@ def predict(url):
 
 
 def lambda_handler(event, context):
-    url = event['url']
+    event_body = json.loads(event['body'])
+    url = event_body['url']
     result = predict(url)
     return result
 

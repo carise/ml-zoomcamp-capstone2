@@ -150,47 +150,12 @@ This will output the model as a file called `model.tflite`
 
 To test loading of the TFLite model and making predictions with it, I've created the `notebook-test.ipynb`. This notebook loads TFLite from the Tensorflow library (I was unable to install a `tflite_runtime` wheel in WSL or MacOS).
 
+The model will be deployed using a pre-built [`tflite_runtime`](https://github.com/alexeygrigorev/tflite-aws-lambda/tree/main).
+
 
 ## Run server locally
 
 The model will be deployed via AWS Lambda. To run it locally:
-
-Build the docker image
-```
-```
-
-Run the container
-```
-```
-
-Send requests to the local lambda function
-```
-```
-
-
-### Sample data
-
-```json
-
-```
-
-### Using postman
-
-You can use [Postman](https://www.postman.com/downloads/) to send requests to the API.
-
-![postman](img/postman_local.png)
-
-### Using curl
-
-If you prefer to issue requests via commandline, you can use `curl`.
-
-```
-TBD
-```
-
-## Docker
-
-Docker provides a consistent way to package and deploy the API and model.
 
 Build the Docker image:
 ```
@@ -199,38 +164,87 @@ docker build -t sea-class .
 
 Run the Docker container:
 ```
-docker run -it -p 8080:8080 sea-class:latest
+docker run -dp 8080:8080 sea-class:latest
 ```
 
-You can issue requests directly to server running in the Docker container. See [Sending test data to server](#sending-test-data-to-server) section for an example request.
+### Send requests to local lambda function
+
+#### Test script
+Edit the `data.url` in `test.py` if you want to use a different image url.
+
+```
+pipenv run python test.py
+
+# output: {"octopus": 0.9990772008895874, "otter": 4.349778492951373e-08, "penguin": 5.916607278777519e-06, "starfish": 0.0009168016258627176}
+```
+
+#### `curl`
+```
+curl -X POST -H "Content-Type: application/json" \
+    http://localhost:8080/2015-03-31/functions/function/invocations \
+    -d '{"url": "https://www.nwf.org/-/media/NEW-WEBSITE/Shared-Folder/Wildlife/Invertebrates/invertebrate_octopus_600x300.jpg"}'
+
+# output: {"octopus": 0.9990772008895874, "otter": 4.349778492951373e-08, "penguin": 5.916607278777519e-06, "starfish": 0.0009168016258627176}
+```
+
+#### Postman
+You can use [Postman](https://www.postman.com/downloads/) to send requests to the API.
+
+![postman](img/postman_local.png)
+
 
 ## Cloud deployment
 
-I've deployed the model to AWS Elastic Beanstalk.
+I've deployed the model to AWS Lambda. **Please be patient**, when you invoke the function, it takes a few seconds to start if it's not warmed up.
 
 ### Deployment details
 
+#### Environment variables
+Set profile (optional), account id, and region
 ```
 export AWS_PROFILE=<aws-profile-name>
-export AWS_EB_PROFILE=<aws-profile-name>
-
-eb init
-eb create sea-class
-
-eb deploy
+export AWS_ACCOUNT_ID=<aws-account-id>
+export AWS_REGION=<aws-region>
 ```
 
-You can send prediction requests (`POST`) to TBD ENDPOINT.
-
-### Using postman
-![postman](img/postman_cloud.png)
-
-### Using curl
+#### Push Docker image to ECR
 ```
-TBD
+aws ecr create-repository --repository-name ml-zoomcamp-capstone2 --region=$AWS_REGION
+
+aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com
+
+docker tag sea-class $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/ml-zoomcamp-capstone2:v1
+
+docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/ml-zoomcamp-capstone2:v1
 ```
 
-Response:
-```json
-TBD
+#### Create the Lambda function
+
+![create lambda functino](img/aws_lambda_create.png)
+
+Create the Lambda trigger
+
+![create lambda trigger](img/aws_lambda_trigger.png)
+
+Configure the function (memory, timeout)
+
+![configure function](img/aws_lambda_config.png)
+
+
+### Invoking the lambda function
+
+**Please be patient**, when you invoke the function, it takes a few seconds to start if it's not warmed up.
+
+#### `curl`
 ```
+curl -X POST -H "Content-Type: application/json" \
+    https://u4h9zdo0zc.execute-api.us-west-2.amazonaws.com/default/ml-zoomcamp-capstone2 \
+    -d '{"url": "https://www.nwf.org/-/media/NEW-WEBSITE/Shared-Folder/Wildlife/Invertebrates/invertebrate_octopus_600x300.jpg"}'
+
+# output
+{"octopus": 0.9990772008895874, "otter": 4.349778492951373e-08, "penguin": 5.916607278777519e-06, "starfish": 0.0009168016258627176}
+```
+
+#### Postman
+
+![postman invoke lambda](img/postman_aws_lambda_invoke.png)
