@@ -1,14 +1,8 @@
-FROM python:3.10-slim
+FROM public.ecr.aws/lambda/python:3.11
 
-RUN pip install pipenv
+RUN pip install keras-image-helper
+RUN pip install https://github.com/alexeygrigorev/tflite-aws-lambda/blob/main/tflite/tflite_runtime-2.14.0-cp311-cp311-linux_x86_64.whl
 
-WORKDIR /app
-COPY ["Pipfile", "Pipfile.lock", "./"]
+COPY ["lambda_function.py", "sea-class.tflite", "./"]
 
-RUN pipenv install --deploy --system
-
-COPY ["predict.py", "model_random_forest.bin", "./"]
-
-EXPOSE 8080
-
-ENTRYPOINT ["gunicorn", "--bind", "0.0.0.0:8080", "predict:app"]
+CMD [ "lambda_function.lambda_handler" ]

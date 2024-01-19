@@ -103,6 +103,9 @@ The one thing I am not sure about is why the validation accuracy for the ResNet5
 
 The commands provided in this README have been tested in MacOS (`pipenv`) and WSL2 Ubuntu (`pip`).
 
+## Git LFS
+You might need to install git-lfs. See [Git-LFS](https://git-lfs.com/) for more info.
+
 ## Install dependencies
 
 Prerequisites: Python 3.11+, `pipenv`
@@ -141,18 +144,28 @@ pipenv run jupyter notebook
 pipenv run python train.py
 ```
 
+This will output the model as a file called `model.tflite`
+
+### TFLite
+
+To test loading of the TFLite model and making predictions with it, I've created the `notebook-test.ipynb`. This notebook loads TFLite from the Tensorflow library (I was unable to install a `tflite_runtime` wheel in WSL or MacOS).
+
 
 ## Run server locally
 
-The trained model can be deployed in a web service (a Flask API). To start the server:
+The model will be deployed via AWS Lambda. To run it locally:
 
+Build the docker image
 ```
-pipenv run gunicorn --bind 0.0.0.0:8080 predict:app
 ```
 
-## Sending test data to server
+Run the container
+```
+```
 
-
+Send requests to the local lambda function
+```
+```
 
 
 ### Sample data
