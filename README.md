@@ -20,7 +20,7 @@ This project uses (a subset of) the [Sea Animals Image Dataset](https://www.kagg
 
 While initially training the model, it took a very long time to train because of how many classes, and the accuracy of the model was quite low (< 30%). I decided to reduce the number of classes I would train the model on so I would have enough time to work on getting the model deployed. While this does change the problem a bit, I figured it is ok to scope down the problem in order to deliver an image classifier that I trained on my own.
 
-Further exploration of the data (e.g. distribution of images per class, duplicate image occurrences) is in [notebook.ipynb](notebook.ipynb)
+Further exploration of the data (e.g. distribution of images per class, duplicate image occurrences) is in [notebook.ipynb](notebook.ipynb) (note: notebook is large, you might need to download in order to view)
 
 
 ### Image preprocessing
@@ -35,7 +35,7 @@ As part of EDA, I did some preprocessing:
 
 I have provided all the data I processed and trained on. You can find the raw dataset in `data/` and the cleaned and padded images in `cleaned_padded_data/`.
 
-To run the `remove_duplicates.py` file, you'll need to have `tkinter` available. The more recent versions of python 3.11 might not have `tkinter` compiled in, so you'll need to refer to other documentation to do that (e.g. [StackOverflow](https://stackoverflow.com/questions/76105218/why-does-tkinter-or-turtle-seem-to-be-missing-or-broken-shouldnt-it-be-part)). As mentioned already, I've already provided all the cleaned data, so you can skip this part unless you're curious about how it works. I'm also aware that there are other scripts and AI-assisted duplicate image removal, but I did not want to create other dependencies just to do a simple image deduplication.
+To run the `remove_duplicates.py` file, you'll need to have `tkinter` available (the functionality using `tkinter` allows the user to pick which image to keep out of the duplicates). The more recent versions of python 3.11 might not have `tkinter` compiled in, so you'll need to refer to other documentation to do that (e.g. [StackOverflow](https://stackoverflow.com/questions/76105218/why-does-tkinter-or-turtle-seem-to-be-missing-or-broken-shouldnt-it-be-part)). As mentioned already, I've already provided all the cleaned data, so you can skip this part unless you're curious about how it works. I'm also aware that there are other scripts and AI-assisted duplicate image removal, but I did not want to create other dependencies just to do a simple image deduplication.
 
 ```
 # in same directory where data/ lives
@@ -66,7 +66,7 @@ For the CNN, data augmentation is performed (e.g. image flips, shifts, etc.). Fo
 
 ## Training the model
 
-I trained a CNN and a model 
+I trained a CNN and a model with ResNet50 as the base layer.
 
 * Train a CNN
     * 2 Conv2D layers - tune the filters
@@ -90,23 +90,24 @@ Metrics used for evaluating the model:
 
 The model trained on ResNet50 is more accurate than the CNN trained only on the data set (98% vs 69% validation accuracy). Loss is also better, 0.08 vs 0.77. Precision, recall, and F1 score were higher for the ResNet50 model.
 
-The one thing I am not sure about is why the validation accuracy for the ResNet50 trained model is so low (25-30%). I'll revisit that later.
+The one thing I am not sure about is why the validation accuracy for the ResNet50 trained model is so low (25-30%). I ran out of time to work on it, so I'll revisit that later.
+
 
 ## Deployment
 
-* Export the final model
+* Export the final model in TFLite format
 * Put training code in `train.py`
 * Local and cloud deployment (details below)
  
 
-# Running the code
+## Running the code
 
 The commands provided in this README have been tested in MacOS (`pipenv`) and WSL2 Ubuntu (`pip`).
 
-## Git LFS
+### Git LFS
 You might need to install git-lfs. See [Git-LFS](https://git-lfs.com/) for more info.
 
-## Install dependencies
+### Install dependencies
 
 Prerequisites: Python 3.11+, `pipenv`
 
@@ -129,7 +130,7 @@ pip install -r requirements-dev.txt
 ```
 
 
-## Jupyter notebook
+### Jupyter notebook
 
 The notebook contains the data cleaning, analysis, and model training.
 
@@ -138,7 +139,7 @@ To run the notebook:
 pipenv run jupyter notebook
 ```
 
-## Training the final model
+### Training the final model
 
 ```
 pipenv run python train.py
@@ -257,6 +258,7 @@ curl -X POST -H "Content-Type: application/json" \
 
 ![postman invoke lambda](img/postman_aws_lambda_invoke.png)
 
-## In case of emergency
+
+# In case of emergency
 
 If you're having issues and need to contact me, please DM me in the DataTalksClub Slack or [file an issue](https://github.com/carise/ml-zoomcamp-capstone2/issues).
