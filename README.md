@@ -20,7 +20,7 @@ This project uses (a subset of) the [Sea Animals Image Dataset](https://www.kagg
 
 While initially training the model, it took a very long time to train because of how many classes, and the accuracy of the model was quite low (< 30%). I decided to reduce the number of classes I would train the model on so I would have enough time to work on getting the model deployed. While this does change the problem a bit, I figured it is ok to scope down the problem in order to deliver an image classifier that I trained on my own.
 
-Further exploration of the data (e.g. distribution of images per class, duplicate image occurrences) is in [notebook.ipynb](notebook.ipynb) (note: notebook is large, you might need to download in order to view)
+Further exploration of the data (e.g. distribution of images per class, duplicate image occurrences) is in [notebook.ipynb](notebook.ipynb) (note: notebook is large, either download it or use [NbViewer](https://nbviewer.org/github/carise/ml-zoomcamp-capstone2/blob/main/notebook.ipynb))
 
 
 ### Image preprocessing
